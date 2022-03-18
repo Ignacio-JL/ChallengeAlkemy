@@ -11,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +21,8 @@ import lombok.Setter;
 @Table(name = "characters")
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE characters SET deleted = true WHERE id=?")
+@Where(clause = "deleted = false")
 public class CharacterEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +37,8 @@ public class CharacterEntity {
 	private int weight;
 	
 	private String history;
+	
+	private boolean deleted = Boolean.FALSE;
 	
 	@ManyToMany(mappedBy = "characters", cascade = CascadeType.ALL)
 	private List<MovieEntity> movies = new ArrayList<>();

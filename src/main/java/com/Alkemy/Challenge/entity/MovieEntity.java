@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Getter;
@@ -26,6 +26,7 @@ import lombok.Setter;
 @Table(name = "movie")
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE movie SET deleted = true WHERE id=?")
 public class MovieEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +45,8 @@ public class MovieEntity {
 	
 	private int qualification;
 	
+	private boolean deleted = Boolean.FALSE;
+	
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(
 			name = "character_movie",
@@ -51,7 +54,7 @@ public class MovieEntity {
 			inverseJoinColumns = @JoinColumn(name = "character_id"))
 	private Set<CharacterEntity> characters = new HashSet<>();
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "gender_id", insertable = false, updatable = false)
 	private GenderEntity gender;
 	
