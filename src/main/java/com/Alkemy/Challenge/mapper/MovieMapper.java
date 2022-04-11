@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.Alkemy.Challenge.dto.CharacterDTO;
@@ -14,23 +15,20 @@ import com.Alkemy.Challenge.dto.MovieDTO;
 import com.Alkemy.Challenge.entity.CharacterEntity;
 import com.Alkemy.Challenge.entity.MovieEntity;
 
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
 public class MovieMapper {
-
-	private final CharacterMapper characterMapper;
+	
+	
+	@Autowired
+	private CharacterMapper characterMapper;
 	
 	public MovieEntity movieDTO2Entity(MovieDTO dto, boolean loadCharacters) {
 		MovieEntity entity = new MovieEntity();
 		entity.setImage(dto.getImage());
 		entity.setTitle(dto.getTitle());
 		entity.setCreationDate(this.string2LocalDate(dto.getCreationDate()));
-		entity.setWeight(dto.getWeight());
-		entity.setHistory(dto.getHistory());
 		entity.setQualification(dto.getQualification());
-		entity.setGender(dto.getGender());
+		//entity.setGender(dto.getGender());
 		entity.setGenderId(dto.getGenderId());
 		if(loadCharacters) {
 			Set<CharacterEntity> characterEntityList = this.characterMapper.characterDTOList2Entity(dto.getCharacters());
@@ -46,13 +44,11 @@ public class MovieMapper {
 		dto.setImage(entity.getImage());
 		dto.setTitle(entity.getTitle());
 		dto.setCreationDate(entity.getCreationDate().toString());
-		dto.setWeight(entity.getWeight());
-		dto.setHistory(entity.getHistory());
 		dto.setQualification(entity.getQualification());
-		dto.setGender(entity.getGender());
+		//dto.setGender(entity.getGender());
 		dto.setGenderId(entity.getGenderId());
 		if(loadCharacters) {
-			List<CharacterDTO> charactersDTO = this.characterMapper.characterEntityList2DTOList(entity.getCharacters(), loadCharacters);
+			List<CharacterDTO> charactersDTO = this.characterMapper.characterEntityList2DTOList(entity.getCharacters(), false);
 			dto.setCharacters(charactersDTO);
 		}
 		
@@ -98,8 +94,17 @@ public class MovieMapper {
 			basicDTO.setImage(entity.getImage());
 			basicDTO.setTitle(entity.getTitle());
 			basicDTO.setCreationDate(entity.getCreationDate().toString());
+			dtos.add(basicDTO);
 		}
 		
 		return dtos;
+	}
+	
+	//update
+	public void movieEntityRefreshValues(MovieEntity entity, MovieDTO dto) {
+		entity.setImage(dto.getImage());
+		entity.setTitle(dto.getTitle());
+		entity.setCreationDate(this.string2LocalDate(dto.getCreationDate()));
+		entity.setQualification(dto.getQualification());
 	}
 }

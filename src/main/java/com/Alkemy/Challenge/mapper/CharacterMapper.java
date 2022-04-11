@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.Alkemy.Challenge.dto.CharacterBasicDTO;
@@ -13,13 +14,13 @@ import com.Alkemy.Challenge.dto.MovieDTO;
 import com.Alkemy.Challenge.entity.CharacterEntity;
 import com.Alkemy.Challenge.entity.MovieEntity;
 
-import lombok.AllArgsConstructor;
-
 @Component
-@AllArgsConstructor
 public class CharacterMapper {
+
 	
-	private final MovieMapper movieMapper;
+	@Autowired
+	private MovieMapper movieMapper;
+	
 //	para guardar un personaje envia un entity
 	public CharacterEntity characterDTO2Entity(CharacterDTO dto, boolean loadMovies) {
 		CharacterEntity entity = new CharacterEntity();
@@ -34,6 +35,7 @@ public class CharacterMapper {
 		}
 		return entity;
 	}
+
 //	para mostrar un personaje, debe mostrar un dto y no entity
 	public CharacterDTO characterEntity2DTO(CharacterEntity entity, boolean loadMovies) {
 		CharacterDTO dto = new CharacterDTO();
@@ -44,7 +46,7 @@ public class CharacterMapper {
 		dto.setWeight(entity.getWeight());
 		dto.setHistory(entity.getHistory());
 		if (loadMovies) {
-			List<MovieDTO> moviesDTO = this.movieMapper.movieEntityList2DTOList(entity.getMovies(), loadMovies);
+			List<MovieDTO> moviesDTO = this.movieMapper.movieEntityList2DTOList(entity.getMovies(), false);
 			dto.setMovies(moviesDTO);
 		} 
 		

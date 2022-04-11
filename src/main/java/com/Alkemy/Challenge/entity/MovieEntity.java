@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Getter;
@@ -27,6 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE movie SET deleted = true WHERE id=?")
+@Where(clause = "deleted = false")
 public class MovieEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +41,6 @@ public class MovieEntity {
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private LocalDate creationDate;
 	
-	private int weight;
-	
-	private String history;
-	
 	private int qualification;
 	
 	private boolean deleted = Boolean.FALSE;
@@ -54,7 +52,7 @@ public class MovieEntity {
 			inverseJoinColumns = @JoinColumn(name = "character_id"))
 	private Set<CharacterEntity> characters = new HashSet<>();
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinColumn(name = "gender_id", insertable = false, updatable = false)
 	private GenderEntity gender;
 	

@@ -40,6 +40,6 @@ public class CharacterEntity {
 	
 	private boolean deleted = Boolean.FALSE;
 	
-	@ManyToMany(mappedBy = "characters", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "characters", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<MovieEntity> movies = new ArrayList<>();
 }
