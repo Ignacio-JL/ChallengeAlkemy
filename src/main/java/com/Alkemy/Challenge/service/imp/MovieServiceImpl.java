@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.Alkemy.Challenge.dto.MovieBasicDTO;
 import com.Alkemy.Challenge.dto.MovieDTO;
+import com.Alkemy.Challenge.dto.MovieFiltersDTO;
 import com.Alkemy.Challenge.entity.MovieEntity;
 import com.Alkemy.Challenge.exception.ParamNotFound;
 import com.Alkemy.Challenge.mapper.MovieMapper;
 import com.Alkemy.Challenge.repository.MovieRepostory;
+import com.Alkemy.Challenge.repository.specifications.MovieSpecification;
 import com.Alkemy.Challenge.service.MovieService;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +24,9 @@ import lombok.AllArgsConstructor;
 public class MovieServiceImpl implements MovieService{
 
 	private final MovieRepostory movieRepostory;
+	
+	private final MovieSpecification movieSpecification;
+	
 	private final MovieMapper movieMapper;
 	
 	@Override
@@ -29,6 +34,14 @@ public class MovieServiceImpl implements MovieService{
 		List<MovieEntity> entities = movieRepostory.findAll();
 		
 		return movieMapper.movieEntitySet2BasicDTOList(entities);
+	}
+	
+	@Override
+	public List<MovieDTO> getByFilters(String name, String gender, String order) {
+		MovieFiltersDTO filtersDTO = new MovieFiltersDTO(name, gender, order);
+		List<MovieEntity> entities = movieRepostory.findAll(movieSpecification.getByFilters(filtersDTO));
+		List<MovieDTO> dto = movieMapper.movieEntityList2DTOList(entities, true);
+		return dto;
 	}
 
 	@Override
@@ -59,5 +72,7 @@ public class MovieServiceImpl implements MovieService{
 		movieRepostory.deleteById(id);
 		
 	}
+
+	
 
 }

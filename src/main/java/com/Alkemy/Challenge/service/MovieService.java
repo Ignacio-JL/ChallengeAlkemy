@@ -9,10 +9,13 @@ public interface MovieService {
 
 	List<MovieBasicDTO> getMovies ();
 	
+	List<MovieDTO> getByFilters(String name, String gender, String order);
+	
 	MovieDTO save (MovieDTO dto);
 	
 	MovieDTO update (MovieDTO dto);
 	
 	void delete (Long id);
+
 	
 }

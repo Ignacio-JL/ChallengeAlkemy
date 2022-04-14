@@ -10,9 +10,9 @@ import lombok.Setter;
 public class CharacterFiltersDTO {
 
 	private String name;
-	//ojo int??
+
 	private String age;
-//	why long?
+
 	private Set<Long> movies;
 	
 	public CharacterFiltersDTO(String name, String age, Set<Long> movies) {
