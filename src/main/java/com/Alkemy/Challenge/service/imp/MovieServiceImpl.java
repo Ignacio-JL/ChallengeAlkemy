@@ -45,6 +45,16 @@ public class MovieServiceImpl implements MovieService{
 	}
 
 	@Override
+	public MovieDTO getById(Long id) {
+		Optional<MovieEntity> entity = movieRepostory.findById(id);
+		if(entity.isEmpty()) {
+			throw new ParamNotFound("Id no encontrado");
+		}
+		MovieDTO dto = movieMapper.movieEntity2DTO(entity.get(), true);
+		return dto;
+	}
+	
+	@Override
 	public MovieDTO save(MovieDTO dto) {
 		MovieEntity entity = movieMapper.movieDTO2Entity(dto, true);
 		MovieEntity entitySaved = movieRepostory.save(entity);
@@ -72,6 +82,7 @@ public class MovieServiceImpl implements MovieService{
 		movieRepostory.deleteById(id);
 		
 	}
+
 
 	
 

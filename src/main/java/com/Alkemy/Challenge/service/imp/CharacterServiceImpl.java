@@ -47,6 +47,16 @@ public class CharacterServiceImpl implements CharacterService{
 	}
 
 	@Override
+	public CharacterDTO getById(Long id) {
+		Optional<CharacterEntity> entity = characterRepository.findById(id);
+		if(entity.isEmpty()) {
+			throw new ParamNotFound("Id no encontrado");
+		}
+		CharacterDTO dto = characterMapper.characterEntity2DTO(entity.get(), true);
+		return dto;
+	}
+	
+	@Override
 	public CharacterDTO save(CharacterDTO dto) {
 
 		CharacterEntity entity = characterMapper.characterDTO2Entity(dto, false);
@@ -77,6 +87,8 @@ public class CharacterServiceImpl implements CharacterService{
 		
 		return characterMapper.characterEntity2DTO(characterSaved, true);
 	}
+
+	
 
 
 }

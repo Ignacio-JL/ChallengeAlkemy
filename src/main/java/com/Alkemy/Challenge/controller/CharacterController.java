@@ -47,6 +47,12 @@ public class CharacterController {
 		return ResponseEntity.ok(characters);
 	}
 	
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<CharacterDTO> getDetail(@PathVariable Long id){
+		CharacterDTO detail = characterService.getById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(detail);
+	}
+	
 	@PostMapping
 	public ResponseEntity<CharacterDTO> save(@Valid @RequestBody CharacterDTO character){
 		CharacterDTO characterSaved = characterService.save(character);

@@ -13,6 +13,8 @@ public interface CharacterService{
 	
 	List<CharacterDTO> getByFilters(String name, String age, Set<Long> movies);
 	
+	CharacterDTO getById(Long id);
+	
 	CharacterDTO save(CharacterDTO dto);
 	
 	CharacterDTO update(CharacterDTO dto);

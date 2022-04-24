@@ -11,6 +11,8 @@ public interface MovieService {
 	
 	List<MovieDTO> getByFilters(String name, String gender, String order);
 	
+	MovieDTO getById(Long id);
+	
 	MovieDTO save (MovieDTO dto);
 	
 	MovieDTO update (MovieDTO dto);

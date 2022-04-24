@@ -45,6 +45,13 @@ public class MovieController {
 		return ResponseEntity.ok(movies);
 	}
 	
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<MovieDTO> getDetail (@PathVariable Long id){
+		MovieDTO movie = movieService.getById(id);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(movie);
+	}
+	
 	@PostMapping 
 	public ResponseEntity<MovieDTO> save(@Valid @RequestBody MovieDTO dto){
 		MovieDTO movieSaved = movieService.save(dto);
