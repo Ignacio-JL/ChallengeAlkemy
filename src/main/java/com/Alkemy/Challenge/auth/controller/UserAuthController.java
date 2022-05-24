@@ -26,8 +26,8 @@ import com.Alkemy.Challenge.auth.service.UserDetailCustomService;
 public class UserAuthController {
 	
 	private UserDetailCustomService userDetailCustomService;
-	private AuthenticationManager authenticationManager;
 	private JwtUtils jwtUtil;
+	private AuthenticationManager authenticationManager;
 	
 	@Autowired
 	public UserAuthController(
@@ -39,7 +39,7 @@ public class UserAuthController {
 		this.jwtUtil = jwtUtil;
 	}
 	
-	@PostMapping("/Signup")
+	@PostMapping("/signup")
 	public ResponseEntity<AuthenticationResponse> signUp(@Valid @RequestBody UserDTO dto) throws Exception{
 		this.userDetailCustomService.save(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -50,7 +50,7 @@ public class UserAuthController {
 		UserDetails userDetails;
 		try {
 			Authentication auth = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authRequest.getClass(), authRequest.getPassword())
+					new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
 					);
 			userDetails = (UserDetails) auth.getPrincipal();
 		} catch (BadCredentialsException e) {
