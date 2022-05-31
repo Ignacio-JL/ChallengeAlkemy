@@ -12,12 +12,15 @@ import org.springframework.stereotype.Service;
 import com.Alkemy.Challenge.auth.dto.UserDTO;
 import com.Alkemy.Challenge.auth.entity.UserEntity;
 import com.Alkemy.Challenge.auth.repository.UserRepository;
+import com.Alkemy.Challenge.service.EmailService;
 
 @Service
 public class UserDetailCustomService implements UserDetailsService{
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private EmailService emailService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -33,9 +36,9 @@ public class UserDetailCustomService implements UserDetailsService{
 		userEntity.setUsername(userDTO.getUsername());
 		userEntity.setPassword(userDTO.getPassword());
 		userEntity = this.userRepository.save(userEntity);
-//		if(userEntity != null) {
-//			//envio mail
-//		}
+		if(userEntity != null) {
+			emailService.sendWelcomeEmailTo(userEntity.getUsername());
+		}
 		return userEntity != null;
 	}
 	
