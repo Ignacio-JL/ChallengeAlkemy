@@ -2,6 +2,7 @@ package com.Alkemy.Challenge.auth.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf().disable()
 		.authorizeHttpRequests().antMatchers("/auth/*").permitAll()
+		.antMatchers(HttpMethod.GET, "/movies/all").hasAnyRole("ADMIN")
 		.anyRequest().authenticated()
 		.and().exceptionHandling()
 		.and().sessionManagement()
