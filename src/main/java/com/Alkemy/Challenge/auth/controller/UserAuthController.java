@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.Alkemy.Challenge.auth.dto.AuthenticationRequest;
 import com.Alkemy.Challenge.auth.dto.AuthenticationResponse;
 import com.Alkemy.Challenge.auth.dto.UserDTO;
-import com.Alkemy.Challenge.auth.service.JwtUtils;
+import com.Alkemy.Challenge.auth.security.JwtTokenProvider;
 import com.Alkemy.Challenge.auth.service.UserDetailCustomService;
 
 @RestController
@@ -26,17 +24,17 @@ import com.Alkemy.Challenge.auth.service.UserDetailCustomService;
 public class UserAuthController {
 	
 	private UserDetailCustomService userDetailCustomService;
-	private JwtUtils jwtUtil;
+	private JwtTokenProvider jwtTokenProvider;
 	private AuthenticationManager authenticationManager;
 	
 	@Autowired
 	public UserAuthController(
 			UserDetailCustomService userDetailCustomService,
 			AuthenticationManager authenticationManager,
-			JwtUtils jwtUtil) {
+			JwtTokenProvider jwtTokenProvider) {
 		this.userDetailCustomService = userDetailCustomService;
 		this.authenticationManager = authenticationManager;
-		this.jwtUtil = jwtUtil;
+		this.jwtTokenProvider = jwtTokenProvider;
 	}
 	
 	@PostMapping("/signup")
@@ -47,16 +45,12 @@ public class UserAuthController {
 	
 	@PostMapping("/signin")
 	public ResponseEntity<AuthenticationResponse> signIn(@RequestBody AuthenticationRequest authRequest)throws Exception{
-		UserDetails userDetails;
-		try {
-			Authentication auth = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-					);
-			userDetails = (UserDetails) auth.getPrincipal();
-		} catch (BadCredentialsException e) {
-			throw new Exception("Incorrect username or password", e);
-		}
-		final String jwt = jwtUtil.generateToken(userDetails);
+		
+		Authentication auth = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+				);
+		
+		final String jwt = jwtTokenProvider.generateToken(auth);
 		
 		return ResponseEntity.ok(new AuthenticationResponse(jwt));
 	}
