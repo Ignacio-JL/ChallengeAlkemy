@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import com.Alkemy.Challenge.auth.dto.UserDTO;
 import com.Alkemy.Challenge.auth.entity.RoleEntity;
 import com.Alkemy.Challenge.auth.entity.UserEntity;
+import com.Alkemy.Challenge.auth.repository.RoleRepository;
 import com.Alkemy.Challenge.auth.repository.UserRepository;
+import com.Alkemy.Challenge.exception.EmailAlreadyExistException;
 import com.Alkemy.Challenge.service.EmailService;
 
 @Service
@@ -27,15 +29,17 @@ public class UserDetailCustomService implements UserDetailsService{
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	private RoleRepository roleRepository;
+	@Autowired
 	private EmailService emailService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Optional<UserEntity> userEntity = userRepository.findByEmail(email);
-		if (userEntity.isEmpty()) {
-			throw new UsernameNotFoundException("User or password not found");
-		}
-		return new User(userEntity.get().getEmail(), userEntity.get().getPassword(), Collections.emptyList());
+//		Nuestro username sera nuestro email
+		UserEntity userEntity = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario/email no encontrado"));
+		
+		return new User(userEntity.getEmail(), userEntity.getPassword(), mappRoles(userEntity.getRoles()));
 	}
 	
 	private Collection<? extends GrantedAuthority> mappRoles(Set<RoleEntity> roles){
@@ -43,11 +47,17 @@ public class UserDetailCustomService implements UserDetailsService{
 	}
 	
 	public Boolean save(UserDTO userDTO) {
+		if(userRepository.existsByEmail(userDTO.getEmail())) {
+			throw new EmailAlreadyExistException(userDTO.getEmail());
+		}
 		UserEntity userEntity = new UserEntity();
 		userEntity.setFirstName(userDTO.getFirstName());
 		userEntity.setLastName(userDTO.getLastName());
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setPassword(userDTO.getPassword());
+		RoleEntity roles = roleRepository.findByName("ROLE_ADMIN").get();
+		userEntity.setRoles(Collections.singleton(roles));
+		
 		userEntity = this.userRepository.save(userEntity);
 		if(userEntity != null) {
 			emailService.sendWelcomeEmailTo(userEntity.getEmail());

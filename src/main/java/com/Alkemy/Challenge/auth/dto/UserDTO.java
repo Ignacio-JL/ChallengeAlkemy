@@ -32,5 +32,4 @@ public class UserDTO {
     private String email;
 	@Size(min = 8, message = "La contraseña debe contener al menos 8 caracteres")
 	private String password;
-	private Set<RoleEntity> roles = new HashSet<>();
 }

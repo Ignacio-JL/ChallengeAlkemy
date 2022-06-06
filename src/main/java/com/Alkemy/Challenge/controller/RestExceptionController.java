@@ -16,6 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.Alkemy.Challenge.dto.ApiErrorDTO;
+import com.Alkemy.Challenge.exception.EmailAlreadyExistException;
+import com.Alkemy.Challenge.exception.JwtBadRequestException;
 import com.Alkemy.Challenge.exception.ParamNotFound;
 
 @ControllerAdvice
@@ -29,6 +31,26 @@ public class RestExceptionController extends ResponseEntityExceptionHandler{
 				Arrays.asList("Param Not Found")
 				);
 		
+		return handleExceptionInternal(ex, errorDTO, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+	@ExceptionHandler(value = {EmailAlreadyExistException.class})
+	protected ResponseEntity<Object> handleEmailAlreadyExistException(RuntimeException ex, WebRequest request) {
+		ApiErrorDTO errorDTO = new ApiErrorDTO(
+				HttpStatus.BAD_REQUEST,
+				ex.getMessage(), 
+				Arrays.asList(ex.getMessage())
+				);
+		return handleExceptionInternal(ex, errorDTO, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+				
+	}
+	
+	@ExceptionHandler(value = {JwtBadRequestException.class})
+	protected ResponseEntity<Object> handleJwtBadRequestException(RuntimeException ex, WebRequest request){
+		ApiErrorDTO errorDTO = new ApiErrorDTO(
+				HttpStatus.BAD_REQUEST, 
+				ex.getMessage(), 
+				Arrays.asList(ex.getMessage())
+				);
 		return handleExceptionInternal(ex, errorDTO, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	

@@ -50,7 +50,7 @@ public class UserAuthController {
 		UserDetails userDetails;
 		try {
 			Authentication auth = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+					new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
 					);
 			userDetails = (UserDetails) auth.getPrincipal();
 		} catch (BadCredentialsException e) {
