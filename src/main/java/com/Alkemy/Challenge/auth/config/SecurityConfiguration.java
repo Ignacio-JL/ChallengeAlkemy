@@ -10,11 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.Alkemy.Challenge.auth.filter.JwtRequestFilter;
+import com.Alkemy.Challenge.auth.security.JwtAuthenticationEntryPoint;
+import com.Alkemy.Challenge.auth.security.JwtAuthenticationFilter;
 import com.Alkemy.Challenge.auth.service.UserDetailCustomService;
 
 @EnableWebSecurity
@@ -24,6 +25,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	private UserDetailCustomService userDetailCustomService;
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtuthenticationEntryPoint;
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter();
+	}
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -44,14 +51,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf().disable()
+		.exceptionHandling().authenticationEntryPoint(jwtuthenticationEntryPoint)
+		.and().sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and()
 		.authorizeHttpRequests().antMatchers("/auth/*").permitAll()
 		.antMatchers(HttpMethod.GET, "/movies/all").hasAnyRole("ADMIN")
-		.anyRequest().authenticated()
-		.and().exceptionHandling()
-		.and().sessionManagement()
-		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		.anyRequest().authenticated();
 		
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		
+		
+		httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 }
