@@ -46,9 +46,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	
 	@Override
 	@Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
@@ -57,7 +57,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 		.and().sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
-		.authorizeHttpRequests().antMatchers("/auth/*").permitAll()
+		.authorizeHttpRequests()
+		.antMatchers(HttpMethod.POST ,"/auth/*").permitAll()
+		//.antMatchers(HttpMethod.POST ,"/auth/signin").permitAll()
 		.antMatchers(HttpMethod.GET, "/movies/all").hasAnyRole("ADMIN")
 		.anyRequest().authenticated();
 		

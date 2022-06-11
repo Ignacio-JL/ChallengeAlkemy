@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.Alkemy.Challenge.auth.dto.UserDTO;
@@ -32,6 +33,8 @@ public class UserDetailCustomService implements UserDetailsService{
 	private RoleRepository roleRepository;
 	@Autowired
 	private EmailService emailService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -54,7 +57,7 @@ public class UserDetailCustomService implements UserDetailsService{
 		userEntity.setFirstName(userDTO.getFirstName());
 		userEntity.setLastName(userDTO.getLastName());
 		userEntity.setEmail(userDTO.getEmail());
-		userEntity.setPassword(userDTO.getPassword());
+		userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		RoleEntity roles = roleRepository.findByName("ROLE_ADMIN").get();
 		userEntity.setRoles(Collections.singleton(roles));
 		

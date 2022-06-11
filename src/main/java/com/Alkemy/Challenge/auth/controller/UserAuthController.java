@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +24,14 @@ import com.Alkemy.Challenge.auth.service.UserDetailCustomService;
 @RequestMapping("/auth")
 public class UserAuthController {
 	
-	private UserDetailCustomService userDetailCustomService;
-	private JwtTokenProvider jwtTokenProvider;
-	private AuthenticationManager authenticationManager;
-	
 	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
+	private UserDetailCustomService userDetailCustomService;
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+	
+	/*@Autowired
 	public UserAuthController(
 			UserDetailCustomService userDetailCustomService,
 			AuthenticationManager authenticationManager,
@@ -35,7 +39,7 @@ public class UserAuthController {
 		this.userDetailCustomService = userDetailCustomService;
 		this.authenticationManager = authenticationManager;
 		this.jwtTokenProvider = jwtTokenProvider;
-	}
+	}*/
 	
 	@PostMapping("/signup")
 	public ResponseEntity<AuthenticationResponse> signUp(@Valid @RequestBody UserDTO dto) throws Exception{
@@ -49,6 +53,8 @@ public class UserAuthController {
 		Authentication auth = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
 				);
+		
+		SecurityContextHolder.getContext().setAuthentication(auth);
 		
 		final String jwt = jwtTokenProvider.generateToken(auth);
 		
